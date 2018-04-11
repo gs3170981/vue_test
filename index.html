@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script src="js/vue_test.js"></script>
+	</head>
+	<body>
+	  <div id="demo">
+	    <ul v-for="t in item">
+	      <li v-test="t.message">
+	        <!--<p v-for="tt in t.child">
+	          <span v-text="tt.val"></span>
+	        </p>-->
+	      </li>
+	    </ul>
+	  </div>
+	</body>
+	<script>
+	  new vue_test({
+      el: '#demo',
+      data: {
+        item: [
+          {
+            message: 'Foo',
+            child: [
+              {
+                val: 'aaa'
+              }
+            ]
+          }, {
+            message: 'Bar',
+            child: [
+              {
+                val: 'aaa'
+              }
+            ]
+          }
+        ]
+      },
+      computed: {
+//      reversedMessage: function () {
+//        return this.message.split('').reverse().join('')
+//      }
+      },
+      watch: {
+//      reversedMessage: function () {
+//        return this.message.split('').reverse().join('')
+//      }
+      },
+      mounted: () => {
+        
+      },
+      methods: {
+        
+      }
+    })
+	</script>
+</html>
