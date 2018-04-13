@@ -8,11 +8,10 @@
 	<body>
 	  <div id="demo">
 	    <ul v-for="t in item">
-	      <li v-test="t.message">
-	        <!--<p v-for="tt in t.child">
-	          <span v-text="tt.val"></span>
-	        </p>-->
-	      </li>
+	      <li v-test="t.message" data-id="t.message"></li>
+	      <p v-for="tt in t.child">
+          <span v-test="tt.val"></span>
+        </p>
 	    </ul>
 	  </div>
 	</body>
