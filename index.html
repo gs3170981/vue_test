@@ -3,20 +3,23 @@
 	<head>
 		<meta charset="UTF-8">
 		<title></title>
-		<script src="js/vue_test.js"></script>
+		<script src="js/vue_test2.js"></script>
 	</head>
 	<body>
 	  <div id="demo">
-	    <ul v-for="t in item">
-	      <li v-test="t.message" data-id="t.message"></li>
-	      <p v-for="tt in t.child">
+	    <ul v-for="(ttt, iii) in item" v-demo="a">
+	      <li v-test="ttt.message" data-id="ttt.message"></li>
+	      <p v-for="tt in ttt.child">
           <span v-test="tt.val"></span>
+          <i v-demo="b"></i>
         </p>
+	      <li v-test="ttt.message"></li>
 	    </ul>
+	    <p v-test="item[0].child[0].val"></p>
 	  </div>
 	</body>
 	<script>
-	  new vue_test({
+	  vue_test({
       el: '#demo',
       data: {
         item: [
@@ -24,7 +27,7 @@
             message: 'Foo',
             child: [
               {
-                val: 'aaa'
+                val: 'bbb'
               }
             ]
           }, {
@@ -35,7 +38,11 @@
               }
             ]
           }
-        ]
+        ],
+        val: 123,
+        other: {
+          val: 777
+        }
       },
       computed: {
 //      reversedMessage: function () {
@@ -48,10 +55,10 @@
 //      }
       },
       mounted: () => {
-        
+
       },
       methods: {
-        
+
       }
     })
 	</script>
