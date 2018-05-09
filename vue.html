@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+    <script src="http://apps.bdimg.com/libs/vue/1.0.14/vue.js"></script>
+	</head>
+	<body>
+	  <div id="demo">
+	    <ul v-for="(iii, ttt) in item" v-demo="a">
+	      <li>test</li>
+	      <li v-text="ttt.message" data-id="ttt.message"></li>
+        <p v-for="tt in ttt.child">
+          <span v-text="tt.val"></span>
+          <i v-demo="b"></i>
+          <span v-for="(i, t) in tt.child">
+            <i v-text="t.val"></i>
+          </span>
+        </p>
+	      <li>test</li>
+	      <li v-text="ttt.message"></li>
+	    </ul>
+	    <p v-text="item[0].child[0].val"></p>
+	  </div>
+	</body>
+	<script>
+	  new Vue({
+      el: '#demo',
+      data: {
+        item: [
+          {
+            message: '1',
+            child: [
+              {
+                val: '1-1',
+                child: [
+                  {
+                    val: '1-1-1'
+                  }, {
+                    val: '1-1-2'
+                  }
+                ]
+              }, {
+                val: '1-2',
+                child: [
+                  {
+                    val: '1-2-1'
+                  }, {
+                    val: '1-2-2'
+                  }
+                ]
+              }
+            ]
+          }, {
+            message: '2',
+            child: [
+              {
+                val: '2-1',
+                child: [ // 没这个对象节点的时候，不处理，数据渲染时搞定
+                  {
+                    val: '2-1-1'
+                  }, {
+                    val: '2-1-2'
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        val: 123,
+        other: {
+          val: 777
+        }
+      },
+      computed: {
+//      reversedMessage: function () {
+//        return this.message.split('').reverse().join('')
+//      }
+      },
+      watch: {
+//      reversedMessage: function () {
+//        return this.message.split('').reverse().join('')
+//      }
+      },
+      mounted () {
+
+      },
+      methods: {
+
+      }
+    })
+	</script>
+</html>

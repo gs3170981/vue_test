@@ -16,14 +16,14 @@ v-for
 v-test
 */
 
-/* 
- * 
+/*
+ *
  1、v-for dom结构渲染 √
  2、v-test data数据渲染
  3、define单向数据驱动
  4、vdom截取
  5、再弄其他methods、生命周期等（前面完成再说）
- 
+
  * */
 const vue_test = (obj) => {
   const D = document
@@ -50,7 +50,7 @@ const vue_test = (obj) => {
       }
 
       let child = dom.children
-      
+
       let item = {
         t: arr[0].replace(/\s/g, ""),
         list: ''
@@ -59,18 +59,13 @@ const vue_test = (obj) => {
       /*
        * 对后面数组对象解析
        */
-      let _item = F.replaceAll([
-        {
-          b: /\s/g,
-          a: ''
-        }, {
-          b: /\[/g,
-          a: '.'
-        }, {
-          b: /\]/g,
-          a: '.'
-        }
-      ], arr[1]).split('.')
+      let _item = F.replaceAll([{
+        b: /\s/g,
+        a: ''
+      }, {
+        b: /\[|\]/g,
+        a: '.'
+      }], arr[1]).split('.')
       for (let i = 0; i < _item.length; i++) {
         if (!item.list) {
           item.list = data.list && _item[i] === data.t ? data.list : source_data[_item[i]]
@@ -78,7 +73,7 @@ const vue_test = (obj) => {
           if (item.list.length) {
             _arr = []
             for (let _i = 0; _i < item.list.length; _i++) {
-              _arr.push(item.list[_i][_item[i]])
+              _arr.push(item.list[_i][_item[i]]) // 这里要递归
             }
             item.list = _arr
           } else {
@@ -95,10 +90,16 @@ const vue_test = (obj) => {
         item.i = t_arr[1]
       }
       let _data = F.copy(item)
-      
+
+//    {
+//      i: 'iii',
+//      t: 'ttt',
+//      list: []
+//    }
+
       // 以上对数据的解析，返回的_data有误，没有正确的返回当前数组下的data值，导致test输出时抛错
-      
-      
+
+
 
 
       let c_len = child.length
@@ -142,7 +143,7 @@ const vue_test = (obj) => {
               source_data: source_data
             })
 
- 
+
           }
 //        debugger
           if (!need_attr) {
@@ -200,29 +201,23 @@ const vue_test = (obj) => {
       } = obj
       dom = dom.cloneNode(true)
 //    let value = dom.attributes[key].value
-//    let 
+//    let
       let t = val.split('.')[0] === data.t
       let str = val.substring(val.indexOf('.') + 1, val.length)
 //    let value = data.list[_i]
       let value = ''
 //    debugger
-      
-      if (t) {
-        value = eval('data.list[_i].' + str)
-      } else {
-        value = eval('source_data.' + str)
-      }
-      
-      dom.attributes[key].value = value
 
-
-//    let _vdom = D.createElement(dom.localName)
-//    let _attr = dom.attributes
-//    for (let i = 0; i < _attr.length; i++) {
-//      let key = _attr[i].name
-//      let val = _attr[i].value.replace(/(^\s*)|(\s*$)/g, "") // 去除两边空格
-//      _vdom.setAttribute(key, val)
+//    if (t) {
+//      value = eval('data.list[_i].' + str)
+//    } else {
+//      value = eval('source_data.' + str)
 //    }
+
+//    dom.attributes[key].value = value
+
+
+
 //    return _vdom
       return {
         dom: dom
