@@ -35,6 +35,7 @@ const vue_test = (obj) => {
         data,
         source_data,
         key,
+        again,
         val
       } = obj
       let arr = val.split(' in ')
@@ -43,7 +44,7 @@ const vue_test = (obj) => {
 //    dom = dom.cloneNode(true)
 
 
-      if (key === arguments.callee.name + '_again') { // 如果key的值就是v-for的话
+      if (again) { // 如果为for下的递归的话
         dom = dom.cloneNode(true)
 //      again = true
       }
@@ -94,6 +95,10 @@ const vue_test = (obj) => {
         item.i = t_arr[1]
       }
       let _data = F.copy(item)
+      
+      // 以上对数据的解析，返回的_data有误，没有正确的返回当前数组下的data值，导致test输出时抛错
+      
+      
 
 
       let c_len = child.length
@@ -114,7 +119,7 @@ const vue_test = (obj) => {
 
           // for遍历有bug
 //        debugger
-
+// TODO attr这一段看看能不能变成对象直接执行
           for (let z = 0; z < c_attr.length; z++) { // 对attr遍历
             let _key = c_attr[z].name
             let val = c_attr[z].value.replace(/(^\s*)|(\s*$)/g, "") // 去除两边空格
@@ -125,12 +130,15 @@ const vue_test = (obj) => {
               continue
             }
             need_attr = true // 需要属性处理
-            let _dom = vdom._vdom ? vdom._vdom : vdom.dom // 判断是否是for进来的
+//          let _dom = vdom._vdom ? vdom._vdom : vdom.dom // 判断是否是for进来的
             vdom = T[_key]({
               val: val,
-              key: _key + '_again',
+              key: _key,
+              again: true,
               data: _data,
-              dom: _dom ? _dom : child[j],
+              _i: i,
+              dom: child[j],
+//            dom: _dom ? _dom : child[j],
               source_data: source_data
             })
 
@@ -165,6 +173,7 @@ const vue_test = (obj) => {
         data,
         source_data,
         key,
+        _i,
         val
       } = obj
 //    debugger
@@ -186,9 +195,27 @@ const vue_test = (obj) => {
         data,
         source_data,
         key,
+        _i, // 下标
         val
       } = obj
+      dom = dom.cloneNode(true)
+//    let value = dom.attributes[key].value
+//    let 
+      let t = val.split('.')[0] === data.t
+      let str = val.substring(val.indexOf('.') + 1, val.length)
+//    let value = data.list[_i]
+      let value = ''
 //    debugger
+      
+      if (t) {
+        value = eval('data.list[_i].' + str)
+      } else {
+        value = eval('source_data.' + str)
+      }
+      
+      dom.attributes[key].value = value
+
+
 //    let _vdom = D.createElement(dom.localName)
 //    let _attr = dom.attributes
 //    for (let i = 0; i < _attr.length; i++) {
@@ -198,7 +225,7 @@ const vue_test = (obj) => {
 //    }
 //    return _vdom
       return {
-        dom: dom.cloneNode(true)
+        dom: dom
       }
     }
   }
