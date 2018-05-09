@@ -30,7 +30,7 @@ const vue_test = (obj) => {
         val
       } = obj
       let arr = val.split(' in ')
-
+      let _vdom = dom.cloneNode(true)
 //    dom = dom.cloneNode(true)
       let child = dom.children
 
@@ -117,7 +117,7 @@ const vue_test = (obj) => {
               source_data: source_data
             })
 
-
+ 
           }
 //        debugger
           if (vdom) { // for还没想好return
@@ -131,7 +131,7 @@ const vue_test = (obj) => {
         j--
         c_len--
       }
-      return dom.cloneNode(true)
+      return _vdom
     },
     'v-demo' (obj) {
       let {
