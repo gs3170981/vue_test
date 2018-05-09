@@ -16,7 +16,15 @@ v-for
 v-test
 */
 
-/* 先实现一个简单的DIY字符串模板渲染 */
+/* 
+ * 
+ 1、v-for dom结构渲染 √
+ 2、v-test data数据渲染
+ 3、define单向数据驱动
+ 4、vdom截取
+ 5、再弄其他methods、生命周期等（前面完成再说）
+ 
+ * */
 const vue_test = (obj) => {
   const D = document
   /* 模板语法 */
@@ -31,10 +39,17 @@ const vue_test = (obj) => {
       } = obj
       let arr = val.split(' in ')
       let _vdom = dom.cloneNode(true)
+//    let again = false
 //    dom = dom.cloneNode(true)
+
+
+      if (key === arguments.callee.name + '_again') { // 如果key的值就是v-for的话
+        dom = dom.cloneNode(true)
+//      again = true
+      }
+
       let child = dom.children
-
-
+      
       let item = {
         t: arr[0].replace(/\s/g, ""),
         list: ''
@@ -89,7 +104,7 @@ const vue_test = (obj) => {
         let c_attr = child[j].attributes
 
 //      let dom_copy = child[j]
-
+        let need_attr = false
         for (let i = 0; i < item.list.length; i++) { // 遍历次数
 
 
@@ -101,37 +116,48 @@ const vue_test = (obj) => {
 //        debugger
 
           for (let z = 0; z < c_attr.length; z++) { // 对attr遍历
-            let key = c_attr[z].name
+            let _key = c_attr[z].name
             let val = c_attr[z].value.replace(/(^\s*)|(\s*$)/g, "") // 去除两边空格
 
 //          _vdom.setAttribute(key, val) // 添加进vdom
 
-            if (!T[key]) {
+            if (!T[_key]) {
               continue
             }
-            vdom = T[key]({
+            need_attr = true // 需要属性处理
+            let _dom = vdom._vdom ? vdom._vdom : vdom.dom // 判断是否是for进来的
+            vdom = T[_key]({
               val: val,
-              key: key,
+              key: _key + '_again',
               data: _data,
-              dom: vdom ? vdom : child[j],
+              dom: _dom ? _dom : child[j],
               source_data: source_data
             })
 
  
           }
 //        debugger
-          if (vdom) { // for还没想好return
-            dom.appendChild(vdom)
-//          j--
+          if (!need_attr) {
+            dom.appendChild(child[j].cloneNode(true))
+          } else if (!vdom._vdom) { // for还没想好return
+            dom.appendChild(vdom.dom)
+//          debugger
+          } else { // 如果有_vdom对象则
+            dom.appendChild(vdom.dom)
+//          debugger
           }
           console.log('end', child[j].localName)
 
         }
+//      debugger
         child[j].remove()
         j--
         c_len--
       }
-      return _vdom
+      return {
+        dom: dom,
+        _vdom: _vdom
+      }
     },
     'v-demo' (obj) {
       let {
@@ -150,7 +176,9 @@ const vue_test = (obj) => {
 //      _vdom.setAttribute(key, val)
 //    }
 //    return _vdom
-      return dom.cloneNode(true)
+      return {
+        dom: dom.cloneNode(true)
+      }
     },
     'v-test' (obj) { // 如果有两个属性在同一个，则都会返回dom节点，回头修改下，bug
       let {
@@ -169,7 +197,9 @@ const vue_test = (obj) => {
 //      _vdom.setAttribute(key, val)
 //    }
 //    return _vdom
-      return dom.cloneNode(true)
+      return {
+        dom: dom.cloneNode(true)
+      }
     }
   }
   /* 方法集 */
