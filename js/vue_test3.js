@@ -18,11 +18,15 @@ v-test
 
 /*
  *
- 1、v-for dom结构渲染
- 2、v-test data数据渲染
- 3、define单向数据驱动
- 4、vdom截取
- 5、再弄其他methods、生命周期等（前面完成再说）
+ v-for dom结构渲染 √
+ v-test data数据渲染
+ v-show
+ v-if
+ v-else
+
+ define单向数据驱动
+ vdom截取
+ 再弄其他methods、生命周期等（前面完成再说）
 
  * */
 const vue_test = (obj) => {
@@ -43,14 +47,7 @@ const vue_test = (obj) => {
       // 解析数组对象
       let item = {}
       let arr = val.split(' in ')
-      arr[1] = arr[1].replace(/\s/g, "")
-//    let item = F.replaceAll([{
-//      b: /\s/g,
-//      a: ''
-//    }, {
-//      b: /\[|\]/g,
-//      a: '.'
-//    }], arr[1]).split('.')
+      arr[0] = arr[0].replace(/\s/g, "")
 
       if (!Object.keys(data).length) { // data为空，则为初始值传入
         item = eval('source_data.' + arr[1])
@@ -59,92 +56,83 @@ const vue_test = (obj) => {
           let item_index = arr[1].indexOf('.')
           item_p = arr[1].substring(0, item_index)
           item_c = arr[1].substring(item_index + 1, arr[1].length)
-          
+
 //        item = eval('data[item_p].' + item_c)
           item = eval('data.' + item_c)
-          
+
         } else { // 一种对象为[]
-          
+
         }
-        
-        
-        
-//      item_arr = data.split('.')
-//      if (data.indexOf('.'))
       }
-
-
-//    if (data[arr[1]]) { // 如果传入的data值有数据的话
-//      
-//      
-//      
-//      
-//      
-//      item = eval('data.' + arr[1])
-//    } else {
-//      item = eval('source_data.' + arr[1])
-//    }
-
 
       // 解析前面的key对象
-      let _key = {
-//      t: arr[0].replace(/\s/g, "")
-      }
+      let _key = {}
       let _t = arr[0].replace(/\s/g, "")
       _key[_t] = item
       if (_t.indexOf(',') !== -1) {
         let t_arr = _t.substring(1, _t.length - 1).split(',')
         delete _key[_t]
-        _key[t_arr[1]] = item
-        _key[t_arr[1]][t_arr[0]] = true
-//      _key.t = t_arr[1]
-//      _key.i = t_arr[0]
+        _t = t_arr[0]
+        _key[t_arr[0]] = item
+        _key[t_arr[0]][t_arr[1]] = true
       }
-//    item = F.copy(_key[])
-//    item = F.copy(Object.assign(item, _key))
-//    debugger
       for_data = Object.assign(for_data ? for_data : {}, _key)
-      
+
       for (let i = 0; i < item.length; i++) {
         let vdom = dom.cloneNode(true)
-//      let _item = F.copy(Object.assign(item[i], _key))
         let _item = F.copy(item[i])
+
+        for_data[_t] = _item
+
         // 与一开始的init代码内容有冗余，先实现再说 --- 方法抽离
         let _vdom = F.init({
           dom: vdom,
           source_data: source_data,
 //        data: _item
           data: _item,
-          _i: i,
+//        _i: i,
           for_data: for_data
         })
         dom.parentNode.appendChild(_vdom)
       }
-
-//    child[j].remove()
-//    debugger
-
-
-//    index.len--
-//    index.i--
-//    dom.remove()
-      
       return {
         no_append: true
 //      dom: dom,
 //      _vdom: _vdom
       }
     },
-//  'v-demo' (obj) {
-//    let {
-//      dom,
-//      data,
-//      source_data,
-//      key,
-//      index,
-//      val
-//    } = obj
-//  },
+    'v-show' (obj) {
+      let {
+        dom,
+        data,
+        source_data,
+        key,
+        index,
+        for_data,
+        val,
+      } = obj
+      /*
+       * 1.对当前data取值
+       * 2.对父级t取值
+       * 3.对对象.[]取值
+       * */
+      let _dom = dom.cloneNode(true)
+//    let str = val.substring(val.indexOf('.') + 1, val.length)
+      let value = ''
+
+      let item = F.resolveStr(val)
+      let items = for_data[item.f]
+      if (items) { // TODO source_data的情况下未测，应该是失败的
+        value = eval('items' + item.e)
+      } else {
+        value = eval('source_data.' + val)
+      }
+      if (value !== undefined && value) {
+        _dom.style.display = 'none'
+      }
+
+      return _dom
+    },
     'v-text' (obj) { // 如果有两个属性在同一个，则都会返回dom节点，回头修改下，bug
       let {
         dom,
@@ -154,7 +142,6 @@ const vue_test = (obj) => {
         index,
         for_data,
         val,
-        _i
       } = obj
       /*
        * 1.对当前data取值
@@ -162,52 +149,22 @@ const vue_test = (obj) => {
        * 3.对对象.[]取值
        * */
       let _dom = dom.cloneNode(true)
-//    let value = dom.attributes[key].value
-//    let
-//    let t = val.split('.')[0] === data.t
-//    let t = val.split('.')[0]
-      let str = val.substring(val.indexOf('.') + 1, val.length)
-//    let value = data.list[_i]
+//    let str = val.substring(val.indexOf('.') + 1, val.length)
       let value = ''
-//    debugger
-      
       if (!Object.keys(data).length) { // 如果一开始data值为空的话，则取source_data
         value = eval('source_data.' + val)
       } else {
-
-        // TODO 对父级t取值 bug！_i对象下标有误
         let item = F.resolveStr(val)
         let items = for_data[item.f]
-//      debugger
         if (items) { // 如果在for_data里有，则取值
-          value = eval('items[_i]' + item.e)
-          
+          value = eval('items' + item.e)
         } else {
           value = eval('source_data.' + val)
         }
-
-        
-//      value = eval('data.' + str)
       }
-//    if (!value) {
-//      debugger
-//    }
-
-//    if (t) {
-//      value = eval('data.list[_i].' + str)
-//    } else {
-//      value = eval('source_data.' + str)
-//    }
-
       _dom.removeAttribute(key)
       _dom.innerText = value
       return _dom
-
-//    return dom.cloneNode(true)
-//    return _vdom
-//    return {
-//      dom: dom
-//    }
     }
   }
   /* 方法集 */
@@ -229,10 +186,10 @@ const vue_test = (obj) => {
       if (is !== -1) { // 一种对象为.
         item.f = str.substring(0, is)
         item.e = str.substring(is, str.length)
-        
+
 //        item = eval('data[item_p].' + item_c)
 //      item = eval('data.' + item_c)
-        
+
       } else { // 一种对象为[]
         item.f = str.substring(0, _is)
         item.e = str.substring(_is, str.length)
@@ -263,12 +220,13 @@ const vue_test = (obj) => {
         t: val
       }
     },
+    /* 创建过程 */
     init (obj) {
       let {
         dom,
         data,
         for_data,
-        _i,
+//      _i,
         source_data
       } = obj
       let child = dom.children
@@ -276,17 +234,17 @@ const vue_test = (obj) => {
         len: child.length,
         i: 0
       }
-      let len = child.length
+//    let len = child.length
       for (index.i = 0; index.i < index.len; index.i++) {
         let attr = child[index.i].attributes
         let _data = F.copy(data)
         let _child = child[index.i].children
         let is = false // 默认找不到DIY属性
-        
+
 //      if (!attr.length) {
 //        dom.appendChild(child[index.i])
 //      }
-        
+
         for (let j = 0; j < attr.length; j++) {
           let key = attr[j].name
           let val = attr[j].value.replace(/(^\s*)|(\s*$)/g, "")
@@ -294,6 +252,8 @@ const vue_test = (obj) => {
             continue
           }
           is = true
+          debugger
+          // TODO 应该是此处渲染二遍出错
           let res_dom = T[key]({
             val: val,
             key: key,
@@ -302,14 +262,10 @@ const vue_test = (obj) => {
 //          dom: dom[i],
             source_data: source_data,
             for_data: for_data,
-            index: index,
+//          index: index,
 //          len: len,
-            _i: _i
+//          _i: _i
           })
-//        if (res_dom.no_append) {
-//          child[index.i].remove()
-//          index.len--
-//        }
           if (res_dom) {
             if (!res_dom.no_append) {
               dom.appendChild(res_dom)
@@ -330,67 +286,11 @@ const vue_test = (obj) => {
           index.i--
           index.len--
         }
-        
+
       }
       return dom.cloneNode(true)
     }
   }
-  /* 创建过程 */
-//const L = {
-//  /*
-//   * 这里采用的是查找节点下是否含有diy属性
-//   * 如没有则查找是否有子节点进行递归
-//   * 无则结束
-//   */
-//  init(obj) {
-//    let {
-//      dom,
-//      data,
-////      vdom,
-//      source_data
-////      fn
-//    } = obj
-//    for (let i = 0; i < dom.length; i++) { // 对el下dom遍历
-//      let child = dom[i].children
-//      let c_attr = dom[i].attributes
-//      let _data = F.copy(data)
-//      let is = false // 默认找不到diy属性
-////      let _vdom = D.createElement(dom[i].localName)
-//      for (let j = 0; j < c_attr.length; j++) { // 对attr遍历
-//        let key = c_attr[j].name
-//        let val = c_attr[j].value.replace(/(^\s*)|(\s*$)/g, "") // 去除两边空格
-////        _vdom.setAttribute(key, val) // 添加进vdom
-//
-//        if (!T[key]) {
-//          continue
-//        }
-//
-//        let res = T[key]({
-//          val: val,
-//          key: key,
-//          data: _data,
-//          dom: dom[i],
-//          source_data: source_data
-//        })
-////        _data = Object.assign(_data, res)
-//
-//        is = true // 找到属性
-//
-////        console.log(_data)
-////        h_data
-//      }
-//      if (!is && child[0]) { // 如果该节点找不到则进入子节点查找
-//        this.init({
-//          dom: child,
-//          data: _data,
-//          source_data: source_data
-//        })
-//      }
-////      console.log(1)
-//
-//    }
-//  }
-//}
   class vue_test {
     /* 构造函数初始化,dom获取失败则中止 */
     constructor(data) {

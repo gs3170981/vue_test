@@ -5,28 +5,20 @@
 		<title></title>
 		<script src="js/vue_test3.js"></script>
 	</head>
+	<!--t.is与v-for同行的bug-->
 	<body>
 	  <div id="demo">
-      <ul v-for="(iii, ttt) in item">
-        <!--<li>test1</li>-->
-        <li v-text="ttt.message" data-id="ttt.message"></li>
-        <!--<li>test2</li>-->
-        <li v-for="tt in ttt.child">
-          <div v-text="ttt.message"></div>
-          <i v-text="tt.val"></i>
-          <span v-for="(i, t) in tt.child">
-            <i v-text="t.val"></i>
-          </span>
-          <!--<span>test3</span>-->
-          <span v-for="(i, t) in tt.child">
-            <i v-text="t.val"></i>
-          </span>
-          <!--<span>test4</span>-->
+      <ul>
+        <li v-for="t in item" v-show="t.is" >
+          <p v-text="t.val"></p>
+          <ul>
+            <li v-for="tt in t.child">
+              <p v-show="tt.is" v-text="tt.vall"></p>
+            </li>
+          </ul>
+          <p v-text="val"></p>
         </li>
-        <!--<li>test5</li>-->
-        <li v-text="ttt.message"></li>
       </ul>
-      <p v-text="item[0].child[0].val"></p>
     </div>
 	</body>
 	<script>
@@ -35,48 +27,30 @@
       data: {
         item: [
           {
-            message: '1',
+            is: false,
+            val: ' 1 ',
             child: [
               {
-                val: '1-1',
-                child: [
-                  {
-                    val: '1-1-1'
-                  }, {
-                    val: '1-1-2'
-                  }
-                ]
+                vall: ' 1-1 '
               }, {
-                val: '1-2',
-                child: [
-                  {
-                    val: '1-2-1'
-                  }, {
-                    val: '1-2-2'
-                  }
-                ]
+                vall: ' 1-2 '
+              }, {
+                vall: ' 1-3 '
               }
             ]
           }, {
-            message: '2',
+            val: ' 2 ',
             child: [
               {
-                val: '2-1',
-                child: [ // 没这个对象节点的时候，不处理，数据渲染时搞定
-                  {
-                    val: '2-1-1'
-                  }, {
-                    val: '2-1-2'
-                  }
-                ]
+                is: false,
+                vall: ' 2-1 '
+              }, {
+                vall: ' 2-2 '
               }
             ]
           }
         ],
-        val: 123,
-        other: {
-          val: 777
-        }
+        val: '【true】'
       },
       computed: {
 //      reversedMessage: function () {
