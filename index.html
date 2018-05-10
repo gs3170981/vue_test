@@ -7,23 +7,23 @@
 	</head>
 	<body>
 	  <div id="demo">
-      <ul v-for="(iii, ttt) in item" v-demo="a">
-        <li>test1</li>
+      <ul v-for="(iii, ttt) in item">
+        <!--<li>test1</li>-->
         <li v-text="ttt.message" data-id="ttt.message"></li>
-        <li>12</li>
+        <!--<li>test2</li>-->
         <li v-for="tt in ttt.child">
-          <span v-text="tt.val"></span>
-          <i v-demo="b"></i>
+          <div v-text="ttt.message"></div>
+          <i v-text="tt.val"></i>
           <span v-for="(i, t) in tt.child">
             <i v-text="t.val"></i>
           </span>
-          <span>123</span>
+          <!--<span>test3</span>-->
           <span v-for="(i, t) in tt.child">
             <i v-text="t.val"></i>
           </span>
-          <span>1234</span>
+          <!--<span>test4</span>-->
         </li>
-        <li>test2</li>
+        <!--<li>test5</li>-->
         <li v-text="ttt.message"></li>
       </ul>
       <p v-text="item[0].child[0].val"></p>

@@ -115,6 +115,7 @@ const vue_test = (obj) => {
           source_data: source_data,
 //        data: _item
           data: _item,
+          _i: i,
           for_data: for_data
         })
         dom.parentNode.appendChild(_vdom)
@@ -151,16 +152,46 @@ const vue_test = (obj) => {
         source_data,
         key,
         index,
-        val
+        for_data,
+        val,
+        _i
       } = obj
+      /*
+       * 1.对当前data取值
+       * 2.对父级t取值
+       * 3.对对象.[]取值
+       * */
       let _dom = dom.cloneNode(true)
 //    let value = dom.attributes[key].value
 //    let
-      let t = val.split('.')[0] === data.t
+//    let t = val.split('.')[0] === data.t
+//    let t = val.split('.')[0]
       let str = val.substring(val.indexOf('.') + 1, val.length)
 //    let value = data.list[_i]
       let value = ''
 //    debugger
+      
+      if (!Object.keys(data).length) { // 如果一开始data值为空的话，则取source_data
+        value = eval('source_data.' + val)
+      } else {
+
+        // TODO 对父级t取值 bug！_i对象下标有误
+        let item = F.resolveStr(val)
+        let items = for_data[item.f]
+//      debugger
+        if (items) { // 如果在for_data里有，则取值
+          value = eval('items[_i]' + item.e)
+          
+        } else {
+          value = eval('source_data.' + val)
+        }
+
+        
+//      value = eval('data.' + str)
+      }
+//    if (!value) {
+//      debugger
+//    }
 
 //    if (t) {
 //      value = eval('data.list[_i].' + str)
@@ -168,8 +199,8 @@ const vue_test = (obj) => {
 //      value = eval('source_data.' + str)
 //    }
 
-//    dom.attributes[key].value = value
-      
+      _dom.removeAttribute(key)
+      _dom.innerText = value
       return _dom
 
 //    return dom.cloneNode(true)
@@ -183,6 +214,30 @@ const vue_test = (obj) => {
   const F = {
     $ (dom) {
       return D.getElementById(dom.substring(dom[0] === '#' ? 1 : 0, dom.length))
+    },
+    /* 解析对象分离
+     * 例如：ttt.message 为ttt,message
+     * ttt['message']为ttt,message
+     * */
+    resolveStr (str) {
+      let is = str.indexOf('.')
+      let _is = str.indexOf('[')
+      let item = {
+        f: '',
+        e: ''
+      }
+      if (is !== -1) { // 一种对象为.
+        item.f = str.substring(0, is)
+        item.e = str.substring(is, str.length)
+        
+//        item = eval('data[item_p].' + item_c)
+//      item = eval('data.' + item_c)
+        
+      } else { // 一种对象为[]
+        item.f = str.substring(0, _is)
+        item.e = str.substring(_is, str.length)
+      }
+      return item
     },
     replaceAll (arr, val) {
       let str = ''
@@ -213,6 +268,7 @@ const vue_test = (obj) => {
         dom,
         data,
         for_data,
+        _i,
         source_data
       } = obj
       let child = dom.children
@@ -246,9 +302,9 @@ const vue_test = (obj) => {
 //          dom: dom[i],
             source_data: source_data,
             for_data: for_data,
-            index: index
+            index: index,
 //          len: len,
-//          _i: i
+            _i: _i
           })
 //        if (res_dom.no_append) {
 //          child[index.i].remove()
