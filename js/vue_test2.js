@@ -18,7 +18,7 @@ v-test
 
 /*
  *
- 1、v-for dom结构渲染 √
+ 1、v-for dom结构渲染
  2、v-test data数据渲染
  3、define单向数据驱动
  4、vdom截取
