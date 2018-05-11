@@ -250,27 +250,27 @@ const vue_test = (obj) => {
         let attr_arr = []
         for (let j = 0; j < attr.length; j++) {
           let key = attr[j].name
-          let val = attr[j].value.replace(/(^\s*)|(\s*$)/g, "")
           T[key] && T[key].opt && T[key].opt.rank && attr_arr.push({
             rank: T[key].opt.rank,
-            key: key,
-            val: val
+            key: key
           })
+          
+          
+//        if () T[key].opt.rank
         }
-        F.sort(attr_arr, 'rank') // 排序
-
+        
 //      debugger
-        for (let j = 0; j < attr_arr.length; j++) {
-          let key = attr_arr[j].key
-          let val = attr_arr[j].val
-//        if (!T[key]) {
-//          continue
-//        }
+        for (let j = 0; j < attr.length; j++) {
+          let key = attr[j].name
+          let val = attr[j].value.replace(/(^\s*)|(\s*$)/g, "")
+          if (!T[key]) {
+            continue
+          }
           is = true
 //        debugger
           // TODO 应该是此处渲染二遍出错
-          child[j].removeAttribute(key) // 删除该节点标识
-//        j--
+
+
           res_dom = T[key]({
             val: val,
             key: key,
@@ -283,6 +283,8 @@ const vue_test = (obj) => {
             //          len: len,
             //          _i: _i
           })
+          child[j].removeAttribute(key) // 删除该节点标识
+//        j--
           if (res_dom) {
             if (!res_dom.no_append) {
               dom.appendChild(res_dom)
@@ -302,26 +304,28 @@ const vue_test = (obj) => {
         else if (!is) {
           dom.appendChild(child[index.i])
           index.i--
-          index.len--
+            index.len--
         }
       }
       return dom.cloneNode(true)
     },
-    sort(arr, t) {
-        var len = arr.length;
-        var minIndex, temp;
-        for (var i = 0; i < len - 1; i++) {
-            minIndex = i;
-            for (var j = i + 1; j < len; j++) {
-                if (arr[j][t] < arr[minIndex][t]) {     //寻找最小的数
-                    minIndex = j;                 //将最小数的索引保存
-                }
-            }
-            temp = arr[i];
-            arr[i] = arr[minIndex];
-            arr[minIndex] = temp;
+    quickSort(t, arr) {
+      if (t.length <= 1) {
+        return t
+      }
+      var pivotIndex = Math.floor(t.length / 2)
+      var pivot = t.splice(pivotIndex, 1)[0]
+      var left = []
+      var right = []
+      for (var i = 0; i < t.length; i++) {
+        if (t[arr][i] < pivot) {
+          left.push(t[arr][i])
         }
-        return arr;
+        else {
+          right.push(t[arr][i])
+        }
+      }
+      return quickSort(left).concat([pivot], quickSort(right))
     }
   }
   class vue_test {
